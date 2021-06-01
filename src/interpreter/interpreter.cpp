@@ -5,16 +5,18 @@ BrainfuckInterpreter::BrainfuckInterpreter(std::string src){
     sourceCode = src;
     if(! syntaxCheck()) throw SyntaxException();
     memorySize = MEMSIZE;
-    memory = new byte[memorySize];
+    memory = new cell[memorySize];
     cleanMemory(memorySize);
 }
-
-BrainfuckInterpreter::BrainfuckInterpreter(std::string src, int _memorySize){
+ 
+BrainfuckInterpreter::BrainfuckInterpreter(std::string src, int _memorySize, bool _debug, int _debugDelay){
     pointerLoc = 0;
     sourceCode = src;
     memorySize = _memorySize;
-    memory = new byte[memorySize];
+    memory = new cell[memorySize];
     cleanMemory(memorySize);
+    debug = _debug;
+    debugDelay = _debugDelay;
 }
 
 BrainfuckInterpreter::~BrainfuckInterpreter(){
@@ -22,6 +24,7 @@ BrainfuckInterpreter::~BrainfuckInterpreter(){
 }
 
 void BrainfuckInterpreter::run(){
+    std::string outBuffer;
     char c = sourceCode[0];
     int64_t counter = -1;
     while (c){
@@ -53,11 +56,26 @@ void BrainfuckInterpreter::run(){
                 break;
 
             case '.':
-                printf("%c", memory[pointerLoc]);
+                if (debug){
+                    outBuffer += memory[pointerLoc];
+                    printf(" :: STDOUT: ");
+                    if(memory[pointerLoc] >= ' ') printf("%c    (0x%02x)", memory[pointerLoc], memory[pointerLoc]);
+                    else printf("     (0x%02x)", memory[pointerLoc]);
+                }
+                else printf("%c", memory[pointerLoc]);
+                if (debug) printf("\n");
                 break;
 
             case ',':
-                std::cin >> memory[pointerLoc];
+                if (debug){
+                    printf(" :: STDIN: ");
+                    std::cin >> memory[pointerLoc];
+                }
+                else{
+                    printf("\nIN: ");
+                    std::cin >> memory[pointerLoc];
+                }
+                printf("\n");
                 break;
             
             case '[':
@@ -84,7 +102,14 @@ void BrainfuckInterpreter::run(){
                 }
                 break;
         }
+        if (debug){
+            if (std::string("+-><.,[]").find(c) != std::string::npos){
+                printDebug(c, 0, memorySize);
+                usleep(debugDelay);
+            }
+        }
     }
+    if (debug) printf("%s", outBuffer.c_str());
 }
 
 void BrainfuckInterpreter::printMemory(int cells){
@@ -95,6 +120,20 @@ void BrainfuckInterpreter::printMemory(int cells){
     printf("::\n :: END ::\n");
 }
 
+void BrainfuckInterpreter::printDebug(char c, int start, int last){
+    static int step = 0;
+    printf(" :: Instruction: %c | Pointer loc: 0x%02x | Step N°: %d :: \n", c, pointerLoc, step);
+    for(int k = start; k < last; k++){
+        printf(" %3d |", memory[k]);
+    }
+    printf("\n");
+    for(int k = start; k < last; k++){
+        if(pointerLoc != k) printf("      ");
+        else printf("   ^  ");
+    }
+    printf("\n\n");
+    step += 1;
+}
 
 bool BrainfuckInterpreter::isInStack(int64_t in){
     for (int64_t k : bracketStack){

@@ -2,11 +2,13 @@
 #include <fstream>
 #include <iostream>
 
+#include <string.h>
+
 #include "interpreter/interpreter.hpp"
 
 int main(int argc, char* argv[]){
-    if (argc == 1){
-        std::cout << "No file provided.\n";
+    if (argc == 1 || argc > 4){
+        std::cout << "Usage: ./bfpint <file.bf> <-v> <VerboseTime [ms]>\n";
         return 1;
     }
 
@@ -22,8 +24,16 @@ int main(int argc, char* argv[]){
         fclose(file);
     }
     else std::cout << "Unable to open file"; 
+
+    bool debugFlag = false;
+    int debugTime = 50000;
+    if(argc >= 3){
+        if(!strcmp(argv[2], "-v")) debugFlag = true;
+
+        if (argc == 4) debugTime = stoi((std::string)argv[3]) * 1000;
+    }
     
-    BrainfuckInterpreter interpreter(code, 30);
+    BrainfuckInterpreter interpreter(code, 30, debugFlag, debugTime);
     interpreter.run();
 
     return 0;

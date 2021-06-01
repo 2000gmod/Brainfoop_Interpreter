@@ -13,15 +13,18 @@
 #define MEMSIZE 30
 
 
-typedef unsigned char byte;
+typedef unsigned char cell;
 
 class BrainfuckInterpreter{
     private:
         std::string sourceCode;
-        byte* memory;
+        cell* memory;
         int pointerLoc;
         std::vector<int64_t> bracketStack;
         int memorySize;
+
+        bool debug;
+        int debugDelay;
 
         bool isInStack(int64_t in);
         void cleanMemory(int size);
@@ -29,10 +32,11 @@ class BrainfuckInterpreter{
     
     public:
         BrainfuckInterpreter(std::string src);
-        BrainfuckInterpreter(std::string src, int memorySize);
+        BrainfuckInterpreter(std::string src, int memorySize, bool _debug = false, int _debugDelay = 50000);
         ~BrainfuckInterpreter();
         void run();
         void printMemory(int cells);
+        void printDebug(char c, int start, int last);
 };
 
 class SyntaxException : public std::exception{

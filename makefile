@@ -1,6 +1,11 @@
 TARGET = bfpint
 
-ARGS = helloworld.bf
+
+FILE = examples/echo.bf
+VERBOSE = -v
+TIME = 100
+
+
 
 CC = g++
 CFLAGS = -Wall -g -lm -MMD
@@ -42,8 +47,11 @@ $(OBJDIR):
 
 .PHONY: clean deepclean run
 
+runVerbose: $(TARGET)
+	./$(TARGET) $(FILE) $(VERBOSE) $(TIME)
+
 run: $(TARGET)
-	./$(TARGET) $(ARGS)
+	./$(TARGET) $(FILE)
 
 clean:
 	rm -f $(TARGET)
