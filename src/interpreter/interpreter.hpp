@@ -13,7 +13,7 @@
 #define MEMSIZE 30
 
 
-typedef unsigned char cell;
+typedef uint8_t cell;
 
 class BrainfuckInterpreter{
     private:

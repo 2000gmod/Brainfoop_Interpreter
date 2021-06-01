@@ -30,6 +30,14 @@ void BrainfuckInterpreter::run(){
     while (c){
         counter++;
         c = sourceCode[counter];
+
+        if (debug){
+            if (std::string("+-><.,[]").find(c) != std::string::npos){
+                printDebug(c, 0, memorySize);
+                usleep(debugDelay);
+            }
+        }
+
         switch(c){
             case '>':
                 pointerLoc++;
@@ -58,24 +66,20 @@ void BrainfuckInterpreter::run(){
             case '.':
                 if (debug){
                     outBuffer += memory[pointerLoc];
-                    printf(" :: STDOUT: ");
-                    if(memory[pointerLoc] >= ' ') printf("%c    (0x%02x)", memory[pointerLoc], memory[pointerLoc]);
-                    else printf("     (0x%02x)", memory[pointerLoc]);
                 }
                 else printf("%c", memory[pointerLoc]);
-                if (debug) printf("\n");
                 break;
 
             case ',':
                 if (debug){
                     printf(" :: STDIN: ");
                     std::cin >> memory[pointerLoc];
+                    printf("\n");
                 }
                 else{
                     printf("\nIN: ");
                     std::cin >> memory[pointerLoc];
                 }
-                printf("\n");
                 break;
             
             case '[':
@@ -102,14 +106,8 @@ void BrainfuckInterpreter::run(){
                 }
                 break;
         }
-        if (debug){
-            if (std::string("+-><.,[]").find(c) != std::string::npos){
-                printDebug(c, 0, memorySize);
-                usleep(debugDelay);
-            }
-        }
     }
-    if (debug) printf("%s", outBuffer.c_str());
+    if (debug) printf(" :: OUTPUT >> %s", outBuffer.c_str());
 }
 
 void BrainfuckInterpreter::printMemory(int cells){
@@ -122,14 +120,18 @@ void BrainfuckInterpreter::printMemory(int cells){
 
 void BrainfuckInterpreter::printDebug(char c, int start, int last){
     static int step = 0;
-    printf(" :: Instruction: %c | Pointer loc: 0x%02x | Step N°: %d :: \n", c, pointerLoc, step);
+    (last > 20) ? last = 20 : last;
+    printf(" :: Next instruction: '%c' | Current pointer: 0x%02x | Step N°: %d :: \n", c, pointerLoc, step);
     for(int k = start; k < last; k++){
         printf(" %3d |", memory[k]);
     }
     printf("\n");
     for(int k = start; k < last; k++){
         if(pointerLoc != k) printf("      ");
-        else printf("   ^  ");
+        else{
+            printf("   ^  ");
+            break;
+        }
     }
     printf("\n\n");
     step += 1;

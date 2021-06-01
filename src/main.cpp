@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
         if (argc == 4) debugTime = stoi((std::string)argv[3]) * 1000;
     }
     
-    BrainfuckInterpreter interpreter(code, 30, debugFlag, debugTime);
+    BrainfuckInterpreter interpreter(code, 30000, debugFlag, debugTime);
     interpreter.run();
 
     return 0;

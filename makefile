@@ -1,9 +1,9 @@
 TARGET = bfpint
 
 
-FILE = examples/echo.bf
+FILE = examples/selfint.bf
 VERBOSE = -v
-TIME = 100
+TIME = 10
 
 
 
